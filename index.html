@@ -1,1 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090d">
+  <meta name="description" content="LEX ONE — AI, learning, CV, translation and productivity in one app.">
 
+  <title>LEX ONE</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <div id="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="brand">
+        <div class="brand-mark">LX</div>
+        <div>
+          <strong>LEX ONE</strong>
+          <span>AI & Productivity</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+
+        <button class="nav-item active" data-page="home">
+          <span>⌂</span>
+          <span>Home</span>
+        </button>
+
+        <button class="nav-item" data-page="ai">
+          <span>✦</span>
+          <span>LEX AI</span>
+        </button>
+
+        <button class="nav-item" data-page="cv">
+          <span>▣</span>
+          <span>LEX CV</span>
+        </button>
+
+        <button class="nav-item" data-page="learn">
+          <span>◇</span>
+          <span>LEX Learn</span>
+        </button>
+
+        <button class="nav-item" data-page="translate">
+          <span>文</span>
+          <span>Translate</span>
+        </button>
+
+        <button class="nav-item" data-page="tools">
+          <span>⚙</span>
+          <span>Tools</span>
+        </button>
+
+      </nav>
+
+      <div class="sidebar-bottom">
+
+        <button class="nav-item" data-page="profile">
+          <span>●</span>
+          <span>Profile</span>
+        </button>
+
+        <button class="nav-item" data-page="settings">
+          <span>☷</span>
+          <span>Settings</span>
+        </button>
+
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <button class="menu-btn" id="menuBtn">
+          ☰
+        </button>
+
+        <div class="topbar-title">
+          <span id="pageTitle">Home</span>
+        </div>
+
+        <div class="topbar-actions">
+
+          <button class="icon-btn" id="themeBtn" title="Toggle theme">
+            ◐
+          </button>
+
+          <button class="profile-button" data-page="profile">
+            <span class="avatar" id="avatar">L</span>
+          </button>
+
+        </div>
+
+      </header>
+
+      <!-- CONTENT -->
+      <section class="content">
+
+        <!-- HOME -->
+        <div class="page active" id="page-home">
+
+          <section class="hero">
+
+            <div class="hero-copy">
+
+              <span class="eyebrow">WELCOME TO LEX ONE</span>
+
+              <h1>
+                One powerful place
+                <span>for everything.</span>
+              </h1>
+
+              <p>
+                AI, learning, career tools, translation and productivity —
+                designed together in one fast global platform.
+              </p>
+
+              <div class="hero-actions">
+
+                <button class="primary-btn" data-page="ai">
+                  Start with LEX AI
+                </button>
+
+                <button class="secondary-btn" data-page="cv">
+                  Build my CV
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="hero-card">
+
+              <div class="lx-symbol">LX</div>
+
+              <div>
+                <strong>LEX ONE</strong>
+                <span>Think. Create. Learn.</span>
+              </div>
+
+            </div>
+
+          </section>
+
+          <section class="section">
+
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">EXPLORE</span>
+                <h2>What can LEX ONE do?</h2>
+              </div>
+            </div>
+
+            <div class="feature-grid">
+
+              <button class="feature-card" data-page="ai">
+                <div class="feature-icon">✦</div>
+                <h3>LEX AI</h3>
+                <p>Ask, write, analyze, brainstorm and create.</p>
+              </button>
+
+              <button class="feature-card" data-page="cv">
+                <div class="feature-icon">▣</div>
+                <h3>LEX CV</h3>
+                <p>Create a professional, ATS-friendly CV.</p>
+              </button>
+
+              <button class="feature-card" data-page="learn">
+                <div class="feature-icon">◇</div>
+                <h3>LEX Learn</h3>
+                <p>Learn faster with an AI-powered tutor.</p>
+              </button>
+
+              <button class="feature-card" data-page="translate">
+                <div class="feature-icon">文</div>
+                <h3>Translate</h3>
+                <p>Break language barriers around the world.</p>
+              </button>
+
+              <button class="feature-card" data-page="tools">
+                <div class="feature-icon">⚙</div>
+                <h3>Tools</h3>
+                <p>Useful tools for everyday productivity.</p>
+              </button>
+
+              <button class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>LEX Create</h3>
+                <p>Creative AI tools coming soon.</p>
+              </button>
+
+            </div>
+
+          </section>
+
+        </div>
+
+        <!-- AI -->
+        <div class="page" id="page-ai">
+
+          <div class="page-header">
+            <span class="eyebrow">LEX AI</span>
+            <h1>Your intelligent workspace.</h1>
+            <p>Ask anything. Build anything. Learn anything.</p>
+          </div>
+
+          <div class="ai-layout">
+
+            <div class="ai-chat">
+
+              <div class="chat-header">
+                <div>
+                  <strong>LEX AI</strong>
+                  <span>Ready</span>
+                </div>
+
+                <button class="secondary-btn" id="newChatBtn">
+                  New chat
+                </button>
+              </div>
+
+              <div class="messages" id="messages">
+
+                <div class="welcome-message">
+                  <div class="ai-avatar">LX</div>
+
+                  <div>
+                    <strong>Welcome to LEX AI</strong>
+                    <p>
+                      What would you like to work on today?
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
+              <form class="chat-form" id="chatForm">
+
+                <textarea
+                  id="chatInput"
+                  rows="1"
+                  placeholder="Message LEX AI..."
+                  autocomplete="off"
+                ></textarea>
+
+                <button type="submit" class="send-btn">
+                  ↑
+                </button>
+
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- CV -->
+        <div class="page" id="page-cv">
+
+          <div class="page-header">
+            <span class="eyebrow">LEX CV</span>
+            <h1>Build your professional future.</h1>
+            <p>Create a clean, professional and ATS-friendly CV.</p>
+          </div>
+
+          <div class="workspace-card">
+
+            <div class="workspace-icon">▣</div>
+
+            <h2>CV Builder</h2>
+
+            <p>
+              Your CV workspace is ready. We'll connect the full CV builder
+              and PDF export next.
+            </p>
+
+            <button class="primary-btn" id="createCvBtn">
+              Create my CV
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- LEARN -->
+        <div class="page" id="page-learn">
+
+          <div class="page-header">
+            <span class="eyebrow">LEX LEARN</span>
+            <h1>Learn without limits.</h1>
+            <p>Your AI-powered learning workspace.</p>
+          </div>
+
+          <div class="feature-grid">
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">📚</div>
+              <h3>AI Tutor</h3>
+              <p>Ask questions and learn step by step.</p>
+            </div>
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">✓</div>
+              <h3>Quizzes</h3>
+              <p>Test your knowledge and improve.</p>
+            </div>
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">XP</div>
+              <h3>Progress</h3>
+              <p>Earn XP and track your learning journey.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TRANSLATE -->
+        <div class="page" id="page-translate">
+
+          <div class="page-header">
+            <span class="eyebrow">LEX TRANSLATE</span>
+            <h1>Connect with the world.</h1>
+            <p>Translate text between languages.</p>
+          </div>
+
+          <div class="translator">
+
+            <div class="translate-box">
+
+              <select id="sourceLanguage">
+                <option value="auto">Detect language</option>
+                <option value="en">English</option>
+                <option value="ne">Nepali</option>
+                <option value="hi">Hindi</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="zh">Chinese</option>
+              </select>
+
+              <textarea
+                id="translateInput"
+                placeholder="Enter text to translate..."
+              ></textarea>
+
+            </div>
+
+            <button class="swap-btn" id="swapLanguage">
+              ⇄
+            </button>
+
+            <div class="translate-box">
+
+              <select id="targetLanguage">
+                <option value="ne">Nepali</option>
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="zh">Chinese</option>
+              </select>
+
+              <textarea
+                id="translateOutput"
+                placeholder="Translation will appear here..."
+                readonly
+              ></textarea>
+
+            </div>
+
+          </div>
+
+          <button class="primary-btn" id="translateBtn">
+            Translate
+          </button>
+
+        </div>
+
+        <!-- TOOLS -->
+        <div class="page" id="page-tools">
+
+          <div class="page-header">
+            <span class="eyebrow">LEX TOOLS</span>
+            <h1>Simple tools. Powerful workflow.</h1>
+            <p>More productivity tools will be added here.</p>
+          </div>
+
+          <div class="feature-grid">
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">QR</div>
+              <h3>QR Generator</h3>
+              <p>Create QR codes quickly.</p>
+            </div>
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">PDF</div>
+              <h3>PDF Tools</h3>
+              <p>Work with documents and PDFs.</p>
+            </div>
+
+            <div class="feature-card static-card">
+              <div class="feature-icon">123</div>
+              <h3>Calculator</h3>
+              <p>Fast everyday calculations.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- PROFILE -->
+        <div class="page" id="page-profile">
+
+          <div class="page-header">
+            <span class="eyebrow">PROFILE</span>
+            <h1>Your LEX ONE account.</h1>
+          </div>
+
+          <div class="profile-card">
+
+            <div class="large-avatar" id="profileAvatar">
+              L
+            </div>
+
+            <div>
+              <h2 id="profileName">Guest User</h2>
+              <p id="profileEmail">Not signed in</p>
+            </div>
+
+          </div>
+
+          <button class="primary-btn" id="signInBtn">
+            Sign in
+          </button>
+
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+
+          <div class="page-header">
+            <span class="eyebrow">SETTINGS</span>
+            <h1>Control your LEX ONE experience.</h1>
+          </div>
+
+          <div class="settings-card">
+
+            <div class="setting-row">
+              <div>
+                <strong>Theme</strong>
+                <span>Switch between light and dark mode.</span>
+              </div>
+
+              <button class="secondary-btn" id="settingsThemeBtn">
+                Toggle
+              </button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <strong>Notifications</strong>
+                <span>Manage future LEX ONE notifications.</span>
+              </div>
+
+              <input
+                type="checkbox"
+                id="notificationsToggle"
+                checked
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
