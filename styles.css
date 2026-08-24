@@ -882,3 +882,146 @@ body.light .primary-btn {
   }
 
 }
+/* =========================================
+   LEX ONE — AUTH SCREEN
+========================================= */
+
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,.08), transparent 35%),
+    #08090d;
+}
+
+.auth-card {
+  width: min(100%, 430px);
+  padding: 38px 30px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 28px;
+  background: rgba(18,20,27,.94);
+  box-shadow: 0 30px 80px rgba(0,0,0,.45);
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+
+.auth-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #08090d;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  box-shadow: 0 12px 35px rgba(255,255,255,.12);
+}
+
+.auth-card .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.auth-card h1 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.auth-card > p {
+  margin: 12px 0 26px;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+#authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#authForm input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  outline: none;
+  background: #0d0f14;
+  color: #ffffff;
+  font-size: 15px;
+  transition: .2s ease;
+}
+
+#authForm input::placeholder {
+  color: #6b7280;
+}
+
+#authForm input:focus {
+  border-color: rgba(255,255,255,.35);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.05);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.auth-switch:hover {
+  background: rgba(255,255,255,.06);
+}
+
+.auth-message {
+  min-height: 22px;
+  margin-top: 16px !important;
+  font-size: 14px;
+}
+
+/* Hide app until authentication is ready */
+body.auth-loading #app {
+  visibility: hidden;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .auth-screen {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 30px 20px;
+    border-radius: 22px;
+  }
+
+  .auth-card h1 {
+    font-size: 28px;
+  }
+
+  .auth-logo {
+    width: 64px;
+    height: 64px;
+  }
+}
