@@ -4,9 +4,9 @@ const {
 
 const db = window.supabaseClient;
 
-/* -----------------------------
+/* =========================================================
    LEX ONE APP
------------------------------ */
+========================================================= */
 
 const pages = document.querySelectorAll(".page");
 const navItems = document.querySelectorAll("[data-page]");
@@ -26,9 +26,31 @@ const pageNames = {
   settings: "Settings"
 };
 
-/* -----------------------------
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(message) {
+  if (!toast) {
+    alert(message);
+    return;
+  }
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+/* =========================================================
    NAVIGATION
------------------------------ */
+========================================================= */
 
 function showPage(pageName) {
   pages.forEach(page => {
@@ -46,7 +68,8 @@ function showPage(pageName) {
   });
 
   if (pageTitle) {
-    pageTitle.textContent = pageNames[pageName] || "LEX ONE";
+    pageTitle.textContent =
+      pageNames[pageName] || "LEX ONE";
   }
 
   sidebar?.classList.remove("open");
@@ -58,12 +81,6 @@ function showPage(pageName) {
 }
 
 navItems.forEach(item => {
-  item.addEventListener("click", () => {
-    showPage(item.dataset.page);
-  });
-});
-
-document.querySelectorAll("[data-page]").forEach(item => {
   item.addEventListener("click", () => {
     const page = item.dataset.page;
 
@@ -77,30 +94,13 @@ menuBtn?.addEventListener("click", () => {
   sidebar?.classList.toggle("open");
 });
 
-/* -----------------------------
-   TOAST
------------------------------ */
-
-let toastTimer;
-
-function showToast(message) {
-  if (!toast) return;
-
-  toast.textContent = message;
-  toast.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
-}
-
-/* -----------------------------
+/* =========================================================
    THEME
------------------------------ */
+========================================================= */
 
-const themeBtn = document.getElementById("themeBtn");
+const themeBtn =
+  document.getElementById("themeBtn");
+
 const settingsThemeBtn =
   document.getElementById("settingsThemeBtn");
 
@@ -110,11 +110,15 @@ function applyTheme(theme) {
     theme === "light"
   );
 
-  localStorage.setItem("lex-one-theme", theme);
+  localStorage.setItem(
+    "lex-one-theme",
+    theme
+  );
 }
 
 const savedTheme =
-  localStorage.getItem("lex-one-theme") || "dark";
+  localStorage.getItem("lex-one-theme") ||
+  "dark";
 
 applyTheme(savedTheme);
 
@@ -122,29 +126,520 @@ function toggleTheme() {
   const isLight =
     document.body.classList.contains("light");
 
-  applyTheme(isLight ? "dark" : "light");
+  applyTheme(
+    isLight ? "dark" : "light"
+  );
 }
 
-themeBtn?.addEventListener("click", toggleTheme);
+themeBtn?.addEventListener(
+  "click",
+  toggleTheme
+);
 
 settingsThemeBtn?.addEventListener(
   "click",
   toggleTheme
 );
 
-/* -----------------------------
-   CHAT
------------------------------ */
+/* =========================================================
+   AUTH HELPERS
+========================================================= */
 
-const chatForm = document.getElementById("chatForm");
-const chatInput = document.getElementById("chatInput");
-const messages = document.getElementById("messages");
-const newChatBtn = document.getElementById("newChatBtn");
+async function getCurrentUser() {
+  if (!db) {
+    return null;
+  }
+
+  const {
+    data,
+    error
+  } = await db.auth.getUser();
+
+  if (error) {
+    console.error(
+      "Get user error:",
+      error
+    );
+
+    return null;
+  }
+
+  return data?.user || null;
+}
+
+function getUserName(user, profile = null) {
+  return (
+    profile?.display_name ||
+    user?.user_metadata?.display_name ||
+    user?.email?.split("@")[0] ||
+    "LEX ONE User"
+  );
+}
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function loadUserProfile() {
+  if (!db) {
+    return;
+  }
+
+  const user =
+    await getCurrentUser();
+
+  const profileName =
+    document.getElementById(
+      "profileName"
+    );
+
+  const profileEmail =
+    document.getElementById(
+      "profileEmail"
+    );
+
+  const avatar =
+    document.getElementById(
+      "avatar"
+    );
+
+  const profileAvatar =
+    document.getElementById(
+      "profileAvatar"
+    );
+
+  const signInBtn =
+    document.getElementById(
+      "signInBtn"
+    );
+
+  const signUpBtn =
+    document.getElementById(
+      "signUpBtn"
+    );
+
+  const signOutBtn =
+    document.getElementById(
+      "signOutBtn"
+    );
+
+  if (!user) {
+    if (profileName) {
+      profileName.textContent =
+        "Guest User";
+    }
+
+    if (profileEmail) {
+      profileEmail.textContent =
+        "Not signed in";
+    }
+
+    if (avatar) {
+      avatar.textContent = "G";
+    }
+
+    if (profileAvatar) {
+      profileAvatar.textContent = "G";
+    }
+
+    if (signInBtn) {
+      signInBtn.style.display = "";
+    }
+
+    if (signUpBtn) {
+      signUpBtn.style.display = "";
+    }
+
+    if (signOutBtn) {
+      signOutBtn.style.display = "none";
+    }
+
+    return;
+  }
+
+  const {
+    data: profile,
+    error
+  } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      "Profile load error:",
+      error
+    );
+  }
+
+  const name =
+    getUserName(
+      user,
+      profile
+    );
+
+  if (profileName) {
+    profileName.textContent =
+      name;
+  }
+
+  if (profileEmail) {
+    profileEmail.textContent =
+      user.email || "";
+  }
+
+  const letter =
+    name
+      .charAt(0)
+      .toUpperCase();
+
+  if (avatar) {
+    avatar.textContent =
+      letter;
+  }
+
+  if (profileAvatar) {
+    profileAvatar.textContent =
+      letter;
+  }
+
+  if (signInBtn) {
+    signInBtn.style.display =
+      "none";
+  }
+
+  if (signUpBtn) {
+    signUpBtn.style.display =
+      "none";
+  }
+
+  if (signOutBtn) {
+    signOutBtn.style.display =
+      "";
+  }
+
+  await loadNotificationSetting(
+    user.id
+  );
+}
+
+/* =========================================================
+   CREATE PROFILE
+========================================================= */
+
+async function createProfileForUser(user) {
+  if (!db || !user) {
+    return;
+  }
+
+  const displayName =
+    getUserName(user);
+
+  const {
+    error
+  } = await db
+    .from("profiles")
+    .upsert(
+      {
+        id: user.id,
+        display_name:
+          displayName
+      },
+      {
+        onConflict: "id"
+      }
+    );
+
+  if (error) {
+    console.error(
+      "Create profile error:",
+      error
+    );
+  }
+}
+
+/* =========================================================
+   SIGN IN
+========================================================= */
+
+const signInBtn =
+  document.getElementById(
+    "signInBtn"
+  );
+
+signInBtn?.addEventListener(
+  "click",
+  async () => {
+
+    if (!db) {
+      showToast(
+        "Supabase connection not ready."
+      );
+      return;
+    }
+
+    const email =
+      prompt(
+        "Enter your email:"
+      );
+
+    if (!email) {
+      return;
+    }
+
+    const password =
+      prompt(
+        "Enter your password:"
+      );
+
+    if (!password) {
+      return;
+    }
+
+    showToast(
+      "Signing in..."
+    );
+
+    const {
+      data,
+      error
+    } = await db.auth.signInWithPassword({
+      email: email.trim(),
+      password
+    });
+
+    if (error) {
+      console.error(
+        "Sign in error:",
+        error
+      );
+
+      showToast(
+        error.message
+      );
+
+      return;
+    }
+
+    await loadUserProfile();
+
+    showToast(
+      `Welcome back, ${getUserName(data.user)}!`
+    );
+  }
+);
+
+/* =========================================================
+   SIGN UP
+========================================================= */
+
+const signUpBtn =
+  document.getElementById(
+    "signUpBtn"
+  );
+
+signUpBtn?.addEventListener(
+  "click",
+  async () => {
+
+    if (!db) {
+      showToast(
+        "Supabase connection not ready."
+      );
+      return;
+    }
+
+    const email =
+      prompt(
+        "Enter your email:"
+      );
+
+    if (!email) {
+      return;
+    }
+
+    const password =
+      prompt(
+        "Create a password (minimum 6 characters):"
+      );
+
+    if (!password) {
+      return;
+    }
+
+    if (password.length < 6) {
+      showToast(
+        "Password must be at least 6 characters."
+      );
+      return;
+    }
+
+    const displayName =
+      prompt(
+        "Enter your name:"
+      ) || email.split("@")[0];
+
+    showToast(
+      "Creating your account..."
+    );
+
+    const {
+      data,
+      error
+    } = await db.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          display_name:
+            displayName.trim()
+        }
+      }
+    });
+
+    if (error) {
+      console.error(
+        "Sign up error:",
+        error
+      );
+
+      showToast(
+        error.message
+      );
+
+      return;
+    }
+
+    if (data?.user) {
+      await createProfileForUser(
+        data.user
+      );
+    }
+
+    if (
+      data?.user &&
+      data?.session
+    ) {
+      await loadUserProfile();
+
+      showToast(
+        "Account created successfully!"
+      );
+    } else {
+      showToast(
+        "Account created. Check your email to verify your account."
+      );
+    }
+  }
+);
+
+/* =========================================================
+   SIGN OUT
+========================================================= */
+
+const signOutBtn =
+  document.getElementById(
+    "signOutBtn"
+  );
+
+signOutBtn?.addEventListener(
+  "click",
+  async () => {
+
+    if (!db) {
+      return;
+    }
+
+    const {
+      error
+    } = await db.auth.signOut();
+
+    if (error) {
+      console.error(
+        "Sign out error:",
+        error
+      );
+
+      showToast(
+        error.message
+      );
+
+      return;
+    }
+
+    currentConversation = null;
+
+    await loadUserProfile();
+
+    showPage("home");
+
+    showToast(
+      "Signed out successfully."
+    );
+  }
+);
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+if (db) {
+  db.auth.onAuthStateChange(
+    async (event, session) => {
+
+      console.log(
+        "Auth state:",
+        event
+      );
+
+      if (
+        event === "SIGNED_IN" &&
+        session?.user
+      ) {
+        await createProfileForUser(
+          session.user
+        );
+      }
+
+      await loadUserProfile();
+    }
+  );
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+const chatForm =
+  document.getElementById(
+    "chatForm"
+  );
+
+const chatInput =
+  document.getElementById(
+    "chatInput"
+  );
+
+const messages =
+  document.getElementById(
+    "messages"
+  );
+
+const newChatBtn =
+  document.getElementById(
+    "newChatBtn"
+  );
 
 let currentConversation = null;
 
-function addMessage(role, content) {
-  if (!messages) return;
+function addMessage(
+  role,
+  content
+) {
+  if (!messages) {
+    return;
+  }
 
   const wrapper =
     document.createElement("div");
@@ -158,10 +653,16 @@ function addMessage(role, content) {
   bubble.className =
     "message-bubble";
 
-  bubble.textContent = content;
+  bubble.textContent =
+    content;
 
-  wrapper.appendChild(bubble);
-  messages.appendChild(wrapper);
+  wrapper.appendChild(
+    bubble
+  );
+
+  messages.appendChild(
+    wrapper
+  );
 
   messages.scrollTop =
     messages.scrollHeight;
@@ -169,20 +670,21 @@ function addMessage(role, content) {
 
 async function createConversation() {
   if (!db) {
-    showToast("Supabase connection not ready.");
+    showToast(
+      "Supabase connection not ready."
+    );
+
     return null;
   }
 
-  const {
-    data: {
-      user
-    }
-  } = await db.auth.getUser();
+  const user =
+    await getCurrentUser();
 
   if (!user) {
     showToast(
       "Sign in to save your conversations."
     );
+
     return null;
   }
 
@@ -199,12 +701,20 @@ async function createConversation() {
     .single();
 
   if (error) {
-    console.error(error);
-    showToast("Could not create conversation.");
+    console.error(
+      "Conversation error:",
+      error
+    );
+
+    showToast(
+      "Could not create conversation."
+    );
+
     return null;
   }
 
-  currentConversation = data;
+  currentConversation =
+    data;
 
   return data;
 }
@@ -214,15 +724,19 @@ async function saveMessage(
   role,
   content
 ) {
-  if (!db || !conversationId) return;
+  if (
+    !db ||
+    !conversationId
+  ) {
+    return;
+  }
 
-  const {
-    data: {
-      user
-    }
-  } = await db.auth.getUser();
+  const user =
+    await getCurrentUser();
 
-  if (!user) return;
+  if (!user) {
+    return;
+  }
 
   const {
     error
@@ -231,7 +745,8 @@ async function saveMessage(
     .insert({
       conversation_id:
         conversationId,
-      user_id: user.id,
+      user_id:
+        user.id,
       role,
       content
     });
@@ -245,9 +760,14 @@ async function saveMessage(
 }
 
 async function sendMessage(text) {
-  if (!text.trim()) return;
+  if (!text.trim()) {
+    return;
+  }
 
-  addMessage("user", text);
+  addMessage(
+    "user",
+    text
+  );
 
   if (!currentConversation) {
     await createConversation();
@@ -270,41 +790,52 @@ async function sendMessage(text) {
   const response =
     "LEX AI is ready. Connect your AI provider/API to enable full AI responses.";
 
-  setTimeout(async () => {
-    addMessage(
-      "assistant",
-      response
-    );
+  setTimeout(
+    async () => {
 
-    if (currentConversation) {
-      await saveMessage(
-        currentConversation.id,
+      addMessage(
         "assistant",
         response
       );
-    }
-  }, 500);
+
+      if (currentConversation) {
+        await saveMessage(
+          currentConversation.id,
+          "assistant",
+          response
+        );
+      }
+
+    },
+    500
+  );
 }
 
 chatForm?.addEventListener(
   "submit",
   async event => {
+
     event.preventDefault();
 
     const text =
       chatInput?.value || "";
 
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      return;
+    }
 
     chatInput.value = "";
 
-    await sendMessage(text);
+    await sendMessage(
+      text
+    );
   }
 );
 
 chatInput?.addEventListener(
   "keydown",
   event => {
+
     if (
       event.key === "Enter" &&
       !event.shiftKey
@@ -319,7 +850,9 @@ chatInput?.addEventListener(
 newChatBtn?.addEventListener(
   "click",
   () => {
-    currentConversation = null;
+
+    currentConversation =
+      null;
 
     if (messages) {
       messages.innerHTML = `
@@ -337,9 +870,9 @@ newChatBtn?.addEventListener(
   }
 );
 
-/* -----------------------------
+/* =========================================================
    CV
------------------------------ */
+========================================================= */
 
 const createCvBtn =
   document.getElementById(
@@ -354,19 +887,18 @@ createCvBtn?.addEventListener(
       showToast(
         "Supabase connection not ready."
       );
+
       return;
     }
 
-    const {
-      data: {
-        user
-      }
-    } = await db.auth.getUser();
+    const user =
+      await getCurrentUser();
 
     if (!user) {
       showToast(
         "Sign in before creating a CV."
       );
+
       return;
     }
 
@@ -375,16 +907,23 @@ createCvBtn?.addEventListener(
     } = await db
       .from("cv_projects")
       .insert({
-        user_id: user.id,
-        title: "My CV",
+        user_id:
+          user.id,
+        title:
+          "My CV",
         data: {}
       });
 
     if (error) {
-      console.error(error);
+      console.error(
+        "CV error:",
+        error
+      );
+
       showToast(
         "Could not create CV."
       );
+
       return;
     }
 
@@ -394,9 +933,9 @@ createCvBtn?.addEventListener(
   }
 );
 
-/* -----------------------------
+/* =========================================================
    TRANSLATION
------------------------------ */
+========================================================= */
 
 const translateBtn =
   document.getElementById(
@@ -434,6 +973,7 @@ translateBtn?.addEventListener(
       showToast(
         "Enter text to translate."
       );
+
       return;
     }
 
@@ -453,9 +993,9 @@ translateBtn?.addEventListener(
   }
 );
 
-/* -----------------------------
+/* =========================================================
    LANGUAGE SWAP
------------------------------ */
+========================================================= */
 
 const swapLanguage =
   document.getElementById(
@@ -489,188 +1029,105 @@ swapLanguage?.addEventListener(
   }
 );
 
-/* -----------------------------
-   PROFILE
------------------------------ */
-
-async function loadUserProfile() {
-  if (!db) return;
-
-  const {
-    data: {
-      user
-    }
-  } = await db.auth.getUser();
-
-  const profileName =
-    document.getElementById(
-      "profileName"
-    );
-
-  const profileEmail =
-    document.getElementById(
-      "profileEmail"
-    );
-
-  const avatar =
-    document.getElementById(
-      "avatar"
-    );
-
-  const profileAvatar =
-    document.getElementById(
-      "profileAvatar"
-    );
-
-  if (!user) {
-    if (profileName)
-      profileName.textContent =
-        "Guest User";
-
-    if (profileEmail)
-      profileEmail.textContent =
-        "Not signed in";
-
-    return;
-  }
-
-  const {
-    data: profile
-  } = await db
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const name =
-    profile?.display_name ||
-    user.user_metadata
-      ?.display_name ||
-    user.email?.split("@")[0] ||
-    "LEX ONE User";
-
-  if (profileName)
-    profileName.textContent =
-      name;
-
-  if (profileEmail)
-    profileEmail.textContent =
-      user.email || "";
-
-  const letter =
-    name.charAt(0).toUpperCase();
-
-  if (avatar)
-    avatar.textContent =
-      letter;
-
-  if (profileAvatar)
-    profileAvatar.textContent =
-      letter;
-}
-
-loadUserProfile();
-
-/* -----------------------------
-   AUTH STATE
------------------------------ */
-
-if (db) {
-  db.auth.onAuthStateChange(
-    async () => {
-      await loadUserProfile();
-    }
-  );
-}
-
-/* -----------------------------
-   SIGN IN
------------------------------ */
-
-const signInBtn =
-  document.getElementById(
-    "signInBtn"
-  );
-
-signInBtn?.addEventListener(
-  "click",
-  async () => {
-
-    if (!db) {
-      showToast(
-        "Supabase connection not ready."
-      );
-      return;
-    }
-
-    const email =
-      prompt(
-        "Enter your email:"
-      );
-
-    if (!email) return;
-
-    const password =
-      prompt(
-        "Enter your password:"
-      );
-
-    if (!password) return;
-
-    const {
-      error
-    } = await db.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      showToast(
-        error.message
-      );
-      return;
-    }
-
-    showToast(
-      "Signed in successfully."
-    );
-
-    await loadUserProfile();
-  }
-);
-
-/* -----------------------------
+/* =========================================================
    NOTIFICATIONS
------------------------------ */
+========================================================= */
 
 const notificationsToggle =
   document.getElementById(
     "notificationsToggle"
   );
 
+async function loadNotificationSetting(
+  userId
+) {
+  if (
+    !db ||
+    !notificationsToggle ||
+    !userId
+  ) {
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await db
+    .from("user_settings")
+    .select("notifications")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      "Notification load error:",
+      error
+    );
+
+    return;
+  }
+
+  if (data) {
+    notificationsToggle.checked =
+      Boolean(
+        data.notifications
+      );
+  }
+}
+
 notificationsToggle?.addEventListener(
   "change",
   async () => {
 
-    if (!db) return;
+    if (!db) {
+      return;
+    }
+
+    const user =
+      await getCurrentUser();
+
+    if (!user) {
+      showToast(
+        "Sign in to change notification settings."
+      );
+
+      notificationsToggle.checked =
+        !notificationsToggle.checked;
+
+      return;
+    }
 
     const {
-      data: {
-        user
-      }
-    } = await db.auth.getUser();
-
-    if (!user) return;
-
-    await db
+      error
+    } = await db
       .from("user_settings")
-      .upsert({
-        user_id: user.id,
-        notifications:
-          notificationsToggle.checked,
-        updated_at:
-          new Date().toISOString()
-      });
+      .upsert(
+        {
+          user_id:
+            user.id,
+          notifications:
+            notificationsToggle.checked,
+          updated_at:
+            new Date().toISOString()
+        },
+        {
+          onConflict:
+            "user_id"
+        }
+      );
+
+    if (error) {
+      console.error(
+        "Notification save error:",
+        error
+      );
+
+      showToast(
+        "Could not save notification setting."
+      );
+
+      return;
+    }
 
     showToast(
       "Notification setting saved."
@@ -678,12 +1135,18 @@ notificationsToggle?.addEventListener(
   }
 );
 
-/* -----------------------------
+/* =========================================================
    INITIALIZATION
------------------------------ */
+========================================================= */
 
-showPage("home");
+async function initializeLexOne() {
+  showPage("home");
 
-console.log(
-  "LEX ONE initialized successfully."
-);
+  await loadUserProfile();
+
+  console.log(
+    "LEX ONE initialized successfully."
+  );
+}
+
+initializeLexOne();
