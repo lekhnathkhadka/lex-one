@@ -1,8 +1,29 @@
-const SUPABASE_URL = "https://ymeetoihaszqswvhdnmm.supabase.co";
+/* =========================================================
+   LEX ONE - SUPABASE CONFIG
+========================================================= */
 
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_B07z940MOZc1vLijvxo7DA_c3Mh_ixb";
+const SUPABASE_URL =
+  "https://ymeetoihaszqswvhdnmm.supabase.co";
 
-window.supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const SUPABASE_ANON_KEY =
+  "sb_publishable_B07z940MOZc1vLijvxo7DA_c3Mh_ixb";
+
+if (
+  !window.supabase ||
+  !window.supabase.createClient
+) {
+  console.error(
+    "Supabase library was not loaded."
+  );
+} else {
+
+  window.supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+  console.log(
+    "LEX ONE Supabase connected."
+  );
+}
