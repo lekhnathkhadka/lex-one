@@ -1,12 +1,23 @@
+/* =========================================================
+   LEX ONE — FINAL APP.JS
+========================================================= */
 
-const {
-  createClient
-} = window.supabase;
+/*
+  IMPORTANT:
+  Your HTML must create window.supabaseClient BEFORE this file runs.
 
-const db = window.supabaseClient;
+  Example:
+
+  window.supabaseClient = window.supabase.createClient(
+    "https://ymeetoihaszqswvhdnmm.supabase.co",
+    "YOUR_PUBLISHABLE_KEY"
+  );
+*/
+
+const db = window.supabaseClient || null;
 
 /* =========================================================
-   LEX ONE APP
+   BASIC ELEMENTS
 ========================================================= */
 
 const pages = document.querySelectorAll(".page");
@@ -31,7 +42,7 @@ const pageNames = {
    TOAST
 ========================================================= */
 
-let toastTimer;
+let toastTimer = null;
 
 function showToast(message) {
   if (!toast) {
@@ -81,29 +92,19 @@ function showPage(pageName) {
   });
 }
 
-document
-  .querySelectorAll("[data-page]")
-  .forEach(item => {
+document.querySelectorAll("[data-page]").forEach(item => {
+  item.addEventListener("click", () => {
+    const page = item.dataset.page;
 
-    item.addEventListener("click", () => {
-
-      const page =
-        item.dataset.page;
-
-      if (page) {
-        showPage(page);
-      }
-
-    });
-
+    if (page) {
+      showPage(page);
+    }
   });
+});
 
-menuBtn?.addEventListener(
-  "click",
-  () => {
-    sidebar?.classList.toggle("open");
-  }
-);
+menuBtn?.addEventListener("click", () => {
+  sidebar?.classList.toggle("open");
+});
 
 /* =========================================================
    THEME
@@ -113,12 +114,9 @@ const themeBtn =
   document.getElementById("themeBtn");
 
 const settingsThemeBtn =
-  document.getElementById(
-    "settingsThemeBtn"
-  );
+  document.getElementById("settingsThemeBtn");
 
 function applyTheme(theme) {
-
   document.body.classList.toggle(
     "light",
     theme === "light"
@@ -131,23 +129,16 @@ function applyTheme(theme) {
 }
 
 const savedTheme =
-  localStorage.getItem(
-    "lex-one-theme"
-  ) || "dark";
+  localStorage.getItem("lex-one-theme") || "dark";
 
 applyTheme(savedTheme);
 
 function toggleTheme() {
-
   const isLight =
-    document.body.classList.contains(
-      "light"
-    );
+    document.body.classList.contains("light");
 
   applyTheme(
-    isLight
-      ? "dark"
-      : "light"
+    isLight ? "dark" : "light"
   );
 }
 
@@ -166,49 +157,31 @@ settingsThemeBtn?.addEventListener(
 ========================================================= */
 
 const authScreen =
-  document.getElementById(
-    "authScreen"
-  );
+  document.getElementById("authScreen");
 
 const authForm =
-  document.getElementById(
-    "authForm"
-  );
+  document.getElementById("authForm");
 
 const authEmail =
-  document.getElementById(
-    "authEmail"
-  );
+  document.getElementById("authEmail");
 
 const authPassword =
-  document.getElementById(
-    "authPassword"
-  );
+  document.getElementById("authPassword");
 
 const authTitle =
-  document.getElementById(
-    "authTitle"
-  );
+  document.getElementById("authTitle");
 
 const authSubtitle =
-  document.getElementById(
-    "authSubtitle"
-  );
+  document.getElementById("authSubtitle");
 
 const authSubmit =
-  document.getElementById(
-    "authSubmit"
-  );
+  document.getElementById("authSubmit");
 
 const authSwitch =
-  document.getElementById(
-    "authSwitch"
-  );
+  document.getElementById("authSwitch");
 
 const authMessage =
-  document.getElementById(
-    "authMessage"
-  );
+  document.getElementById("authMessage");
 
 let isSignUpMode = false;
 
@@ -217,11 +190,42 @@ let isSignUpMode = false;
 ========================================================= */
 
 function showAuthMessage(message) {
-
   if (authMessage) {
-    authMessage.textContent =
-      message;
+    authMessage.textContent = message || "";
   }
+}
+
+/* =========================================================
+   AUTH BUTTON STATE
+========================================================= */
+
+function resetAuthButton() {
+  if (!authSubmit) return;
+
+  authSubmit.disabled = false;
+
+  authSubmit.textContent =
+    isSignUpMode
+      ? "Create Account"
+      : "Sign In";
+}
+
+function setAuthLoading(loading) {
+  if (!authSubmit) return;
+
+  authSubmit.disabled = loading;
+
+  authSubmit.textContent = loading
+    ? (
+        isSignUpMode
+          ? "Creating..."
+          : "Signing in..."
+      )
+    : (
+        isSignUpMode
+          ? "Create Account"
+          : "Sign In"
+      );
 }
 
 /* =========================================================
@@ -229,7 +233,6 @@ function showAuthMessage(message) {
 ========================================================= */
 
 function updateAuthScreen() {
-
   if (
     !authTitle ||
     !authSubtitle ||
@@ -240,7 +243,6 @@ function updateAuthScreen() {
   }
 
   if (isSignUpMode) {
-
     authTitle.textContent =
       "Create Account";
 
@@ -254,7 +256,6 @@ function updateAuthScreen() {
       "Already have an account? Sign In";
 
   } else {
-
     authTitle.textContent =
       "Sign in";
 
@@ -276,27 +277,35 @@ function updateAuthScreen() {
 ========================================================= */
 
 async function getCurrentUser() {
-
   if (!db) {
     return null;
   }
 
-  const {
-    data,
-    error
-  } = await db.auth.getUser();
+  try {
+    const {
+      data,
+      error
+    } = await db.auth.getUser();
 
-  if (error) {
+    if (error) {
+      console.error(
+        "Get user error:",
+        error
+      );
 
+      return null;
+    }
+
+    return data?.user || null;
+
+  } catch (error) {
     console.error(
-      "Get user error:",
+      "Get user exception:",
       error
     );
 
     return null;
   }
-
-  return data?.user || null;
 }
 
 /* =========================================================
@@ -307,7 +316,6 @@ function getUserName(
   user,
   profile = null
 ) {
-
   return (
     profile?.display_name ||
     user?.user_metadata?.display_name ||
@@ -320,38 +328,50 @@ function getUserName(
    CREATE / UPDATE PROFILE
 ========================================================= */
 
-async function createProfileForUser(
-  user
-) {
-
+async function createProfileForUser(user) {
   if (!db || !user) {
-    return;
+    return null;
   }
 
-  const displayName =
-    getUserName(user);
+  try {
+    const displayName =
+      getUserName(user);
 
-  const {
-    error
-  } = await db
-    .from("profiles")
-    .upsert(
-      {
-        id: user.id,
-        display_name:
-          displayName
-      },
-      {
-        onConflict: "id"
-      }
-    );
+    const {
+      data,
+      error
+    } = await db
+      .from("profiles")
+      .upsert(
+        {
+          id: user.id,
+          display_name: displayName
+        },
+        {
+          onConflict: "id"
+        }
+      )
+      .select()
+      .maybeSingle();
 
-  if (error) {
+    if (error) {
+      console.error(
+        "Profile creation error:",
+        error
+      );
 
+      return null;
+    }
+
+    return data;
+
+  } catch (error) {
     console.error(
-      "Profile creation error:",
+      "Profile creation exception:",
       error
     );
+
+    return null;
   }
 }
 
@@ -360,7 +380,6 @@ async function createProfileForUser(
 ========================================================= */
 
 async function loadUserProfile() {
-
   if (!db) {
     return;
   }
@@ -369,37 +388,24 @@ async function loadUserProfile() {
     await getCurrentUser();
 
   const profileName =
-    document.getElementById(
-      "profileName"
-    );
+    document.getElementById("profileName");
 
   const profileEmail =
-    document.getElementById(
-      "profileEmail"
-    );
+    document.getElementById("profileEmail");
 
   const avatar =
-    document.getElementById(
-      "avatar"
-    );
+    document.getElementById("avatar");
 
   const profileAvatar =
-    document.getElementById(
-      "profileAvatar"
-    );
+    document.getElementById("profileAvatar");
 
   const signInBtn =
-    document.getElementById(
-      "signInBtn"
-    );
+    document.getElementById("signInBtn");
 
   const signOutBtn =
-    document.getElementById(
-      "signOutBtn"
-    );
+    document.getElementById("signOutBtn");
 
   if (!user) {
-
     if (profileName) {
       profileName.textContent =
         "Guest User";
@@ -419,31 +425,40 @@ async function loadUserProfile() {
     }
 
     if (signInBtn) {
-      signInBtn.style.display =
-        "";
+      signInBtn.style.display = "";
     }
 
     if (signOutBtn) {
-      signOutBtn.style.display =
-        "none";
+      signOutBtn.style.display = "none";
     }
 
     return;
   }
 
-  const {
-    data: profile,
-    error
-  } = await db
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
+  let profile = null;
 
-  if (error) {
+  try {
+    const {
+      data,
+      error
+    } = await db
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
 
+    if (error) {
+      console.error(
+        "Profile load error:",
+        error
+      );
+    } else {
+      profile = data;
+    }
+
+  } catch (error) {
     console.error(
-      "Profile load error:",
+      "Profile load exception:",
       error
     );
   }
@@ -470,23 +485,19 @@ async function loadUserProfile() {
       .toUpperCase();
 
   if (avatar) {
-    avatar.textContent =
-      letter;
+    avatar.textContent = letter;
   }
 
   if (profileAvatar) {
-    profileAvatar.textContent =
-      letter;
+    profileAvatar.textContent = letter;
   }
 
   if (signInBtn) {
-    signInBtn.style.display =
-      "none";
+    signInBtn.style.display = "none";
   }
 
   if (signOutBtn) {
-    signOutBtn.style.display =
-      "";
+    signOutBtn.style.display = "";
   }
 
   await loadNotificationSetting(
@@ -500,19 +511,57 @@ async function loadUserProfile() {
 
 authSwitch?.addEventListener(
   "click",
-  () => {
+  event => {
+    event.preventDefault();
+
+    if (authSubmit?.disabled) {
+      return;
+    }
 
     isSignUpMode =
       !isSignUpMode;
 
     updateAuthScreen();
 
+    if (authEmail) {
+      authEmail.focus();
+    }
+
     if (authPassword) {
-      authPassword.value =
-        "";
+      authPassword.value = "";
     }
   }
 );
+
+/* =========================================================
+   SHOW APP
+========================================================= */
+
+function showApp() {
+  if (authScreen) {
+    authScreen.style.display = "none";
+  }
+
+  const app =
+    document.getElementById("app");
+
+  if (app) {
+    app.style.display = "";
+  }
+}
+
+function showAuth() {
+  if (authScreen) {
+    authScreen.style.display = "flex";
+  }
+
+  const app =
+    document.getElementById("app");
+
+  if (app) {
+    app.style.display = "none";
+  }
+}
 
 /* =========================================================
    AUTH FORM
@@ -525,7 +574,6 @@ authForm?.addEventListener(
     event.preventDefault();
 
     if (!db) {
-
       showAuthMessage(
         "Supabase connection not ready."
       );
@@ -537,10 +585,9 @@ authForm?.addEventListener(
       authEmail?.value.trim();
 
     const password =
-      authPassword?.value;
+      authPassword?.value || "";
 
     if (!email || !password) {
-
       showAuthMessage(
         "Please enter your email and password."
       );
@@ -549,7 +596,6 @@ authForm?.addEventListener(
     }
 
     if (password.length < 6) {
-
       showAuthMessage(
         "Password must be at least 6 characters."
       );
@@ -557,100 +603,123 @@ authForm?.addEventListener(
       return;
     }
 
-    if (authSubmit) {
-      authSubmit.disabled =
-        true;
-
-      authSubmit.textContent =
-        isSignUpMode
-          ? "Creating..."
-          : "Signing in...";
+    if (
+      authSubmit &&
+      authSubmit.disabled
+    ) {
+      return;
     }
 
-    /* =====================================================
-       CREATE ACCOUNT
-    ===================================================== */
+    showAuthMessage("");
+    setAuthLoading(true);
 
-    if (isSignUpMode) {
+    try {
 
-      const {
-        data,
-        error
-      } = await db.auth.signUp({
-        email,
-        password
-      });
+      /* =====================================================
+         CREATE ACCOUNT
+      ===================================================== */
 
-      if (error) {
+      if (isSignUpMode) {
 
-        console.error(
-          "Sign up error:",
+        const {
+          data,
+          error
+        } = await db.auth.signUp({
+          email,
+          password
+        });
+
+        console.log(
+          "Sign up result:",
+          data,
           error
         );
 
-        showAuthMessage(
-          error.message
-        );
+        if (error) {
+          console.error(
+            "Sign up error:",
+            error
+          );
 
-        if (authSubmit) {
-          authSubmit.disabled =
-            false;
+          showAuthMessage(
+            error.message
+          );
+
+          return;
         }
 
-        updateAuthScreen();
+        if (!data?.user) {
+          showAuthMessage(
+            "Account could not be created. Please try again."
+          );
+
+          return;
+        }
+
+        /*
+          IMPORTANT:
+          Profile creation is intentionally not allowed
+          to block the signup result.
+        */
+
+        createProfileForUser(
+          data.user
+        ).catch(error => {
+          console.error(
+            "Background profile creation error:",
+            error
+          );
+        });
+
+        /*
+          Session exists:
+          Supabase has immediately signed the user in.
+        */
+
+        if (data.session) {
+
+          showApp();
+
+          await loadUserProfile();
+
+          showToast(
+            "Account created successfully!"
+          );
+
+          if (authPassword) {
+            authPassword.value = "";
+          }
+
+        } else {
+
+          /*
+            No session usually means email confirmation
+            is enabled in Supabase.
+          */
+
+          showAuthMessage(
+            "Account created successfully. Please check your email to verify your account."
+          );
+
+          isSignUpMode = false;
+
+          updateAuthScreen();
+
+          if (authEmail) {
+            authEmail.value = email;
+          }
+
+          if (authPassword) {
+            authPassword.value = "";
+          }
+        }
 
         return;
       }
 
-      if (
-        data?.user &&
-        data?.session
-      ) {
-
-        await createProfileForUser(
-          data.user
-        );
-
-        if (authScreen) {
-          authScreen.style.display =
-            "none";
-        }
-
-        const app =
-          document.getElementById(
-            "app"
-          );
-
-        if (app) {
-          app.style.display =
-            "";
-        }
-
-        await loadUserProfile();
-
-        showToast(
-          "Account created successfully!"
-        );
-
-      } else {
-
-        showAuthMessage(
-          "Account created. Please check your email to verify your account."
-        );
-
-        isSignUpMode =
-          false;
-
-        updateAuthScreen();
-      }
-
-    }
-
-    /* =====================================================
-       SIGN IN
-    ===================================================== */
-
-    else {
+      /* =====================================================
+         SIGN IN
+      ===================================================== */
 
       const {
         data,
@@ -660,8 +729,13 @@ authForm?.addEventListener(
         password
       });
 
-      if (error) {
+      console.log(
+        "Sign in result:",
+        data,
+        error
+      );
 
+      if (error) {
         console.error(
           "Sign in error:",
           error
@@ -671,51 +745,54 @@ authForm?.addEventListener(
           error.message
         );
 
-        if (authSubmit) {
-          authSubmit.disabled =
-            false;
-        }
+        return;
+      }
 
-        updateAuthScreen();
+      if (!data?.user) {
+        showAuthMessage(
+          "Sign in failed. Please try again."
+        );
 
         return;
       }
 
-      if (data?.user) {
+      await createProfileForUser(
+        data.user
+      );
 
-        await createProfileForUser(
-          data.user
-        );
+      showApp();
 
-        if (authScreen) {
-          authScreen.style.display =
-            "none";
-        }
+      await loadUserProfile();
 
-        const app =
-          document.getElementById(
-            "app"
-          );
+      showToast(
+        "Signed in successfully."
+      );
 
-        if (app) {
-          app.style.display =
-            "";
-        }
-
-        await loadUserProfile();
-
-        showToast(
-          "Signed in successfully."
-        );
+      if (authPassword) {
+        authPassword.value = "";
       }
-    }
 
-    if (authSubmit) {
-      authSubmit.disabled =
-        false;
-    }
+    } catch (error) {
 
-    updateAuthScreen();
+      console.error(
+        "Authentication exception:",
+        error
+      );
+
+      showAuthMessage(
+        error?.message ||
+        "Something went wrong. Please try again."
+      );
+
+    } finally {
+
+      /*
+        This guarantees that the button never remains
+        permanently stuck on Creating... or Signing in...
+      */
+
+      setAuthLoading(false);
+    }
   }
 );
 
@@ -724,71 +801,64 @@ authForm?.addEventListener(
 ========================================================= */
 
 async function signOut() {
-
   if (!db) {
     return;
   }
 
-  const {
-    error
-  } = await db.auth.signOut();
+  try {
 
-  if (error) {
+    const {
+      error
+    } = await db.auth.signOut();
+
+    if (error) {
+      console.error(
+        "Sign out error:",
+        error
+      );
+
+      showToast(
+        error.message
+      );
+
+      return;
+    }
+
+    currentConversation = null;
+
+    showAuth();
+
+    if (authEmail) {
+      authEmail.value = "";
+    }
+
+    if (authPassword) {
+      authPassword.value = "";
+    }
+
+    isSignUpMode = false;
+
+    updateAuthScreen();
+
+    showToast(
+      "Signed out successfully."
+    );
+
+  } catch (error) {
 
     console.error(
-      "Sign out error:",
+      "Sign out exception:",
       error
     );
 
     showToast(
-      error.message
+      "Could not sign out."
     );
-
-    return;
   }
-
-  currentConversation =
-    null;
-
-  const app =
-    document.getElementById(
-      "app"
-    );
-
-  if (app) {
-    app.style.display =
-      "none";
-  }
-
-  if (authScreen) {
-    authScreen.style.display =
-      "flex";
-  }
-
-  if (authEmail) {
-    authEmail.value =
-      "";
-  }
-
-  if (authPassword) {
-    authPassword.value =
-      "";
-  }
-
-  isSignUpMode =
-    false;
-
-  updateAuthScreen();
-
-  showToast(
-    "Signed out successfully."
-  );
 }
 
 const signOutBtn =
-  document.getElementById(
-    "signOutBtn"
-  );
+  document.getElementById("signOutBtn");
 
 signOutBtn?.addEventListener(
   "click",
@@ -802,27 +872,20 @@ signOutBtn?.addEventListener(
 ========================================================= */
 
 const signInBtn =
-  document.getElementById(
-    "signInBtn"
-  );
+  document.getElementById("signInBtn");
 
 signInBtn?.addEventListener(
   "click",
   () => {
 
-    if (authScreen) {
-      authScreen.style.display =
-        "flex";
-    }
+    showAuth();
 
-    const app =
-      document.getElementById(
-        "app"
-      );
+    isSignUpMode = false;
 
-    if (app) {
-      app.style.display =
-        "none";
+    updateAuthScreen();
+
+    if (authEmail) {
+      authEmail.focus();
     }
   }
 );
@@ -839,57 +902,69 @@ async function initializeAuth() {
       "Supabase client not found."
     );
 
+    showAuthMessage(
+      "Supabase connection is not configured."
+    );
+
+    showAuth();
+
     return;
   }
 
-  const {
-    data: {
-      session
-    }
-  } = await db.auth.getSession();
+  try {
 
-  if (session?.user) {
+    const {
+      data,
+      error
+    } = await db.auth.getSession();
 
-    if (authScreen) {
-      authScreen.style.display =
-        "none";
-    }
-
-    const app =
-      document.getElementById(
-        "app"
+    if (error) {
+      console.error(
+        "Session error:",
+        error
       );
 
-    if (app) {
-      app.style.display =
-        "";
+      showAuth();
+
+      return;
     }
 
-    await createProfileForUser(
-      session.user
+    const session =
+      data?.session;
+
+    if (session?.user) {
+
+      showApp();
+
+      /*
+        Do this outside the auth state callback.
+      */
+
+      createProfileForUser(
+        session.user
+      ).catch(error => {
+        console.error(
+          "Initial profile creation error:",
+          error
+        );
+      });
+
+      await loadUserProfile();
+
+    } else {
+
+      showAuth();
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Auth initialization error:",
+      error
     );
 
-    await loadUserProfile();
-
-  } else {
-
-    if (authScreen) {
-      authScreen.style.display =
-        "flex";
-    }
-
-    const app =
-      document.getElementById(
-        "app"
-      );
-
-    if (app) {
-      app.style.display =
-        "none";
-    }
+    showAuth();
   }
-
-  updateAuthScreen();
 }
 
 /* =========================================================
@@ -899,46 +974,52 @@ async function initializeAuth() {
 if (db) {
 
   db.auth.onAuthStateChange(
-    async (
-      event,
-      session
-    ) => {
+    (event, session) => {
 
       console.log(
         "Auth event:",
         event
       );
 
+      /*
+        IMPORTANT:
+        Do not await Supabase calls directly inside
+        this callback.
+      */
+
       if (
         event === "SIGNED_IN" &&
         session?.user
       ) {
 
-        await createProfileForUser(
-          session.user
-        );
+        showApp();
 
-        await loadUserProfile();
+        setTimeout(() => {
+          createProfileForUser(
+            session.user
+          ).catch(error => {
+            console.error(
+              "Auth state profile error:",
+              error
+            );
+          });
+
+          loadUserProfile().catch(error => {
+            console.error(
+              "Auth state profile load error:",
+              error
+            );
+          });
+        }, 0);
       }
 
       if (
         event === "SIGNED_OUT"
       ) {
 
-        const app =
-          document.getElementById(
-            "app"
-          );
+        currentConversation = null;
 
-        if (app) {
-          app.style.display =
-            "none";
-        }
-
-        if (authScreen) {
-          authScreen.style.display =
-            "flex";
-        }
+        showAuth();
       }
     }
   );
@@ -949,27 +1030,22 @@ if (db) {
 ========================================================= */
 
 const chatForm =
-  document.getElementById(
-    "chatForm"
-  );
+  document.getElementById("chatForm");
 
 const chatInput =
-  document.getElementById(
-    "chatInput"
-  );
+  document.getElementById("chatInput");
 
 const messages =
-  document.getElementById(
-    "messages"
-  );
+  document.getElementById("messages");
 
 const newChatBtn =
-  document.getElementById(
-    "newChatBtn"
-  );
+  document.getElementById("newChatBtn");
 
-let currentConversation =
-  null;
+let currentConversation = null;
+
+/* =========================================================
+   ADD MESSAGE
+========================================================= */
 
 function addMessage(
   role,
@@ -981,17 +1057,13 @@ function addMessage(
   }
 
   const wrapper =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   wrapper.className =
     `message ${role}`;
 
   const bubble =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   bubble.className =
     "message-bubble";
@@ -1010,6 +1082,10 @@ function addMessage(
   messages.scrollTop =
     messages.scrollHeight;
 }
+
+/* =========================================================
+   CREATE CONVERSATION
+========================================================= */
 
 async function createConversation() {
 
@@ -1034,24 +1110,43 @@ async function createConversation() {
     return null;
   }
 
-  const {
-    data,
-    error
-  } = await db
-    .from("conversations")
-    .insert({
-      user_id:
-        user.id,
-      title:
-        "New conversation"
-    })
-    .select()
-    .single();
+  try {
 
-  if (error) {
+    const {
+      data,
+      error
+    } = await db
+      .from("conversations")
+      .insert({
+        user_id: user.id,
+        title: "New conversation"
+      })
+      .select()
+      .single();
+
+    if (error) {
+
+      console.error(
+        "Conversation error:",
+        error
+      );
+
+      showToast(
+        "Could not create conversation."
+      );
+
+      return null;
+    }
+
+    currentConversation =
+      data;
+
+    return data;
+
+  } catch (error) {
 
     console.error(
-      "Conversation error:",
+      "Conversation exception:",
       error
     );
 
@@ -1061,12 +1156,11 @@ async function createConversation() {
 
     return null;
   }
-
-  currentConversation =
-    data;
-
-  return data;
 }
+
+/* =========================================================
+   SAVE MESSAGE
+========================================================= */
 
 async function saveMessage(
   conversationId,
@@ -1088,33 +1182,45 @@ async function saveMessage(
     return;
   }
 
-  const {
-    error
-  } = await db
-    .from("messages")
-    .insert({
-      conversation_id:
-        conversationId,
-      user_id:
-        user.id,
-      role,
-      content
-    });
+  try {
 
-  if (error) {
+    const {
+      error
+    } = await db
+      .from("messages")
+      .insert({
+        conversation_id:
+          conversationId,
+        user_id:
+          user.id,
+        role,
+        content
+      });
+
+    if (error) {
+
+      console.error(
+        "Message save error:",
+        error
+      );
+    }
+
+  } catch (error) {
 
     console.error(
-      "Message save error:",
+      "Message save exception:",
       error
     );
   }
 }
 
-async function sendMessage(
-  text
-) {
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
 
-  if (!text.trim()) {
+async function sendMessage(text) {
+
+  if (!text?.trim()) {
     return;
   }
 
@@ -1161,6 +1267,10 @@ async function sendMessage(
   );
 }
 
+/* =========================================================
+   CHAT FORM
+========================================================= */
+
 chatForm?.addEventListener(
   "submit",
   async event => {
@@ -1174,12 +1284,11 @@ chatForm?.addEventListener(
       return;
     }
 
-    chatInput.value =
-      "";
+    if (chatInput) {
+      chatInput.value = "";
+    }
 
-    await sendMessage(
-      text
-    );
+    await sendMessage(text);
   }
 );
 
@@ -1199,12 +1308,15 @@ chatInput?.addEventListener(
   }
 );
 
+/* =========================================================
+   NEW CHAT
+========================================================= */
+
 newChatBtn?.addEventListener(
   "click",
   () => {
 
-    currentConversation =
-      null;
+    currentConversation = null;
 
     if (messages) {
 
@@ -1216,7 +1328,6 @@ newChatBtn?.addEventListener(
           </div>
 
           <div>
-
             <strong>
               New conversation
             </strong>
@@ -1224,7 +1335,6 @@ newChatBtn?.addEventListener(
             <p>
               What would you like to work on?
             </p>
-
           </div>
 
         </div>
@@ -1238,9 +1348,7 @@ newChatBtn?.addEventListener(
 ========================================================= */
 
 const createCvBtn =
-  document.getElementById(
-    "createCvBtn"
-  );
+  document.getElementById("createCvBtn");
 
 createCvBtn?.addEventListener(
   "click",
@@ -1267,35 +1375,47 @@ createCvBtn?.addEventListener(
       return;
     }
 
-    const {
-      error
-    } = await db
-      .from("cv_projects")
-      .insert({
-        user_id:
-          user.id,
-        title:
-          "My CV",
-        data: {}
-      });
+    try {
 
-    if (error) {
+      const {
+        error
+      } = await db
+        .from("cv_projects")
+        .insert({
+          user_id: user.id,
+          title: "My CV",
+          data: {}
+        });
+
+      if (error) {
+
+        console.error(
+          "CV error:",
+          error
+        );
+
+        showToast(
+          "Could not create CV."
+        );
+
+        return;
+      }
+
+      showToast(
+        "CV project created successfully."
+      );
+
+    } catch (error) {
 
       console.error(
-        "CV error:",
+        "CV exception:",
         error
       );
 
       showToast(
         "Could not create CV."
       );
-
-      return;
     }
-
-    showToast(
-      "CV project created successfully."
-    );
   }
 );
 
@@ -1304,29 +1424,19 @@ createCvBtn?.addEventListener(
 ========================================================= */
 
 const translateBtn =
-  document.getElementById(
-    "translateBtn"
-  );
+  document.getElementById("translateBtn");
 
 const translateInput =
-  document.getElementById(
-    "translateInput"
-  );
+  document.getElementById("translateInput");
 
 const translateOutput =
-  document.getElementById(
-    "translateOutput"
-  );
+  document.getElementById("translateOutput");
 
 const sourceLanguage =
-  document.getElementById(
-    "sourceLanguage"
-  );
+  document.getElementById("sourceLanguage");
 
 const targetLanguage =
-  document.getElementById(
-    "targetLanguage"
-  );
+  document.getElementById("targetLanguage");
 
 translateBtn?.addEventListener(
   "click",
@@ -1361,9 +1471,7 @@ translateBtn?.addEventListener(
 ========================================================= */
 
 const swapLanguage =
-  document.getElementById(
-    "swapLanguage"
-  );
+  document.getElementById("swapLanguage");
 
 swapLanguage?.addEventListener(
   "click",
@@ -1413,34 +1521,44 @@ async function loadNotificationSetting(
     return;
   }
 
-  const {
-    data,
-    error
-  } = await db
-    .from("user_settings")
-    .select("notifications")
-    .eq(
-      "user_id",
-      userId
-    )
-    .maybeSingle();
+  try {
 
-  if (error) {
+    const {
+      data,
+      error
+    } = await db
+      .from("user_settings")
+      .select("notifications")
+      .eq(
+        "user_id",
+        userId
+      )
+      .maybeSingle();
+
+    if (error) {
+
+      console.error(
+        "Notification load error:",
+        error
+      );
+
+      return;
+    }
+
+    if (data) {
+
+      notificationsToggle.checked =
+        Boolean(
+          data.notifications
+        );
+    }
+
+  } catch (error) {
 
     console.error(
-      "Notification load error:",
+      "Notification load exception:",
       error
     );
-
-    return;
-  }
-
-  if (data) {
-
-    notificationsToggle.checked =
-      Boolean(
-        data.notifications
-      );
   }
 }
 
@@ -1467,42 +1585,58 @@ notificationsToggle?.addEventListener(
       return;
     }
 
-    const {
-      error
-    } = await db
-      .from("user_settings")
-      .upsert(
-        {
-          user_id:
-            user.id,
-          notifications:
-            notificationsToggle.checked,
-          updated_at:
-            new Date().toISOString()
-        },
-        {
-          onConflict:
-            "user_id"
-        }
+    try {
+
+      const {
+        error
+      } = await db
+        .from("user_settings")
+        .upsert(
+          {
+            user_id: user.id,
+            notifications:
+              notificationsToggle.checked,
+            updated_at:
+              new Date().toISOString()
+          },
+          {
+            onConflict:
+              "user_id"
+          }
+        );
+
+      if (error) {
+
+        console.error(
+          "Notification save error:",
+          error
+        );
+
+        notificationsToggle.checked =
+          !notificationsToggle.checked;
+
+        showToast(
+          "Could not save notification setting."
+        );
+
+        return;
+      }
+
+      showToast(
+        "Notification setting saved."
       );
 
-    if (error) {
+    } catch (error) {
 
       console.error(
-        "Notification save error:",
+        "Notification save exception:",
         error
       );
 
       showToast(
         "Could not save notification setting."
       );
-
-      return;
     }
-
-    showToast(
-      "Notification setting saved."
-    );
   }
 );
 
