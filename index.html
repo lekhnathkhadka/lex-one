@@ -2,32 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#08090d">
-  <meta name="description" content="LEX ONE — AI, learning, CV, translation and productivity in one app.">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#08090d"
+  >
+
+  <meta
+    name="description"
+    content="LEX ONE — AI, learning, CV, translation and productivity in one app."
+  >
 
   <title>LEX ONE</title>
 
   <link rel="stylesheet" href="styles.css">
 
+  <!-- SUPABASE LIBRARY -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-  <!-- =========================
+  <!-- =====================================================
        AUTH SCREEN
-  ========================== -->
+  ====================================================== -->
 
-  <div id="authScreen" class="auth-screen">
+  <div
+    id="authScreen"
+    class="auth-screen"
+  >
 
     <div class="auth-card">
 
-      <div class="auth-logo">LX</div>
+      <div class="auth-logo">
+        LX
+      </div>
 
-      <span class="eyebrow">WELCOME TO LEX ONE</span>
+      <span class="eyebrow">
+        WELCOME TO LEX ONE
+      </span>
 
-      <h1 id="authTitle">Sign in</h1>
+      <h1 id="authTitle">
+        Sign in
+      </h1>
 
       <p id="authSubtitle">
         Continue to your LEX ONE workspace.
@@ -70,75 +92,131 @@
         Create Account
       </button>
 
-      <p id="authMessage" class="auth-message"></p>
+      <p
+        id="authMessage"
+        class="auth-message"
+      ></p>
 
     </div>
 
   </div>
 
 
-  <!-- =========================
+  <!-- =====================================================
        MAIN APP
-  ========================== -->
+  ====================================================== -->
 
   <div id="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
+
+    <aside
+      class="sidebar"
+      id="sidebar"
+    >
 
       <div class="brand">
 
-        <div class="brand-mark">LX</div>
+        <div class="brand-mark">
+          LX
+        </div>
 
         <div>
-          <strong>LEX ONE</strong>
-          <span>AI & Productivity</span>
+          <strong>
+            LEX ONE
+          </strong>
+
+          <span>
+            AI & Productivity
+          </span>
         </div>
 
       </div>
 
+
       <nav class="nav">
 
-        <button class="nav-item active" data-page="home">
+        <button
+          type="button"
+          class="nav-item active"
+          data-page="home"
+        >
           <span>⌂</span>
           <span>Home</span>
         </button>
 
-        <button class="nav-item" data-page="ai">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="ai"
+        >
           <span>✦</span>
           <span>LEX AI</span>
         </button>
 
-        <button class="nav-item" data-page="cv">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="cv"
+        >
           <span>▣</span>
           <span>LEX CV</span>
         </button>
 
-        <button class="nav-item" data-page="learn">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="learn"
+        >
           <span>◇</span>
           <span>LEX Learn</span>
         </button>
 
-        <button class="nav-item" data-page="translate">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="translate"
+        >
           <span>文</span>
           <span>Translate</span>
         </button>
 
-        <button class="nav-item" data-page="tools">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="tools"
+        >
           <span>⚙</span>
           <span>Tools</span>
         </button>
 
       </nav>
 
+
       <div class="sidebar-bottom">
 
-        <button class="nav-item" data-page="profile">
+        <button
+          type="button"
+          class="nav-item"
+          data-page="profile"
+        >
           <span>●</span>
           <span>Profile</span>
         </button>
 
-        <button class="nav-item" data-page="settings">
+
+        <button
+          type="button"
+          class="nav-item"
+          data-page="settings"
+        >
           <span>☷</span>
           <span>Settings</span>
         </button>
@@ -148,23 +226,36 @@
     </aside>
 
 
-    <!-- MAIN -->
+    <!-- ===================================================
+         MAIN
+    ==================================================== -->
+
     <main class="main">
 
       <!-- TOPBAR -->
+
       <header class="topbar">
 
-        <button class="menu-btn" id="menuBtn">
+        <button
+          type="button"
+          class="menu-btn"
+          id="menuBtn"
+        >
           ☰
         </button>
 
+
         <div class="topbar-title">
-          <span id="pageTitle">Home</span>
+          <span id="pageTitle">
+            Home
+          </span>
         </div>
+
 
         <div class="topbar-actions">
 
           <button
+            type="button"
             class="icon-btn"
             id="themeBtn"
             title="Toggle theme"
@@ -172,11 +263,18 @@
             ◐
           </button>
 
+
           <button
+            type="button"
             class="profile-button"
             data-page="profile"
           >
-            <span class="avatar" id="avatar">L</span>
+            <span
+              class="avatar"
+              id="avatar"
+            >
+              L
+            </span>
           </button>
 
         </div>
@@ -184,15 +282,21 @@
       </header>
 
 
-      <!-- CONTENT -->
+      <!-- =================================================
+           CONTENT
+      ================================================== -->
+
       <section class="content">
 
 
-        <!-- =========================
+        <!-- =================================================
              HOME
-        ========================== -->
+        ================================================== -->
 
-        <div class="page active" id="page-home">
+        <div
+          class="page active"
+          id="page-home"
+        >
 
           <section class="hero">
 
@@ -202,26 +306,33 @@
                 WELCOME TO LEX ONE
               </span>
 
+
               <h1>
                 One powerful place
                 <span>for everything.</span>
               </h1>
 
+
               <p>
-                AI, learning, career tools, translation and productivity —
-                designed together in one fast global platform.
+                AI, learning, career tools, translation and
+                productivity — designed together in one fast
+                global platform.
               </p>
+
 
               <div class="hero-actions">
 
                 <button
+                  type="button"
                   class="primary-btn"
                   data-page="ai"
                 >
                   Start with LEX AI
                 </button>
 
+
                 <button
+                  type="button"
                   class="secondary-btn"
                   data-page="cv"
                 >
@@ -232,6 +343,7 @@
 
             </div>
 
+
             <div class="hero-card">
 
               <div class="lx-symbol">
@@ -239,8 +351,13 @@
               </div>
 
               <div>
-                <strong>LEX ONE</strong>
-                <span>Think. Create. Learn.</span>
+                <strong>
+                  LEX ONE
+                </strong>
+
+                <span>
+                  Think. Create. Learn.
+                </span>
               </div>
 
             </div>
@@ -269,67 +386,116 @@
 
             <div class="feature-grid">
 
+
               <button
+                type="button"
                 class="feature-card"
                 data-page="ai"
               >
-                <div class="feature-icon">✦</div>
-                <h3>LEX AI</h3>
+
+                <div class="feature-icon">
+                  ✦
+                </div>
+
+                <h3>
+                  LEX AI
+                </h3>
+
                 <p>
                   Ask, write, analyze, brainstorm and create.
                 </p>
+
               </button>
 
 
               <button
+                type="button"
                 class="feature-card"
                 data-page="cv"
               >
-                <div class="feature-icon">▣</div>
-                <h3>LEX CV</h3>
+
+                <div class="feature-icon">
+                  ▣
+                </div>
+
+                <h3>
+                  LEX CV
+                </h3>
+
                 <p>
                   Create a professional, ATS-friendly CV.
                 </p>
+
               </button>
 
 
               <button
+                type="button"
                 class="feature-card"
                 data-page="learn"
               >
-                <div class="feature-icon">◇</div>
-                <h3>LEX Learn</h3>
+
+                <div class="feature-icon">
+                  ◇
+                </div>
+
+                <h3>
+                  LEX Learn
+                </h3>
+
                 <p>
                   Learn faster with an AI-powered tutor.
                 </p>
+
               </button>
 
 
               <button
+                type="button"
                 class="feature-card"
                 data-page="translate"
               >
-                <div class="feature-icon">文</div>
-                <h3>Translate</h3>
+
+                <div class="feature-icon">
+                  文
+                </div>
+
+                <h3>
+                  Translate
+                </h3>
+
                 <p>
                   Break language barriers around the world.
                 </p>
+
               </button>
 
 
               <button
+                type="button"
                 class="feature-card"
                 data-page="tools"
               >
-                <div class="feature-icon">⚙</div>
-                <h3>Tools</h3>
+
+                <div class="feature-icon">
+                  ⚙
+                </div>
+
+                <h3>
+                  Tools
+                </h3>
+
                 <p>
                   Useful tools for everyday productivity.
                 </p>
+
               </button>
 
 
-              <button class="feature-card">
+              <button
+                type="button"
+                class="feature-card"
+              >
 
                 <div class="feature-icon">
                   🎨
@@ -352,11 +518,14 @@
         </div>
 
 
-        <!-- =========================
-             AI
-        ========================== -->
+        <!-- =================================================
+             LEX AI
+        ================================================== -->
 
-        <div class="page" id="page-ai">
+        <div
+          class="page"
+          id="page-ai"
+        >
 
           <div class="page-header">
 
@@ -393,7 +562,9 @@
 
                 </div>
 
+
                 <button
+                  type="button"
                   class="secondary-btn"
                   id="newChatBtn"
                 >
@@ -443,6 +614,7 @@
                   autocomplete="off"
                 ></textarea>
 
+
                 <button
                   type="submit"
                   class="send-btn"
@@ -459,11 +631,14 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              CV
-        ========================== -->
+        ================================================== -->
 
-        <div class="page" id="page-cv">
+        <div
+          class="page"
+          id="page-cv"
+        >
 
           <div class="page-header">
 
@@ -493,11 +668,13 @@
             </h2>
 
             <p>
-              Your CV workspace is ready. We'll connect the full CV builder
-              and PDF export next.
+              Your CV workspace is ready. We'll connect the
+              full CV builder and PDF export next.
             </p>
 
+
             <button
+              type="button"
               class="primary-btn"
               id="createCvBtn"
             >
@@ -509,11 +686,14 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              LEARN
-        ========================== -->
+        ================================================== -->
 
-        <div class="page" id="page-learn">
+        <div
+          class="page"
+          id="page-learn"
+        >
 
           <div class="page-header">
 
@@ -589,9 +769,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              TRANSLATE
-        ========================== -->
+        ================================================== -->
 
         <div
           class="page"
@@ -673,6 +853,7 @@
 
 
             <button
+              type="button"
               class="swap-btn"
               id="swapLanguage"
             >
@@ -735,6 +916,7 @@
 
 
           <button
+            type="button"
             class="primary-btn"
             id="translateBtn"
           >
@@ -744,9 +926,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              TOOLS
-        ========================== -->
+        ================================================== -->
 
         <div
           class="page"
@@ -827,9 +1009,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              PROFILE
-        ========================== -->
+        ================================================== -->
 
         <div
           class="page"
@@ -858,6 +1040,7 @@
               L
             </div>
 
+
             <div>
 
               <h2 id="profileName">
@@ -873,19 +1056,34 @@
           </div>
 
 
+          <!-- SIGN IN -->
+
           <button
+            type="button"
             class="primary-btn"
             id="signInBtn"
           >
             Sign In
           </button>
 
+
+          <!-- SIGN OUT -->
+
+          <button
+            type="button"
+            class="secondary-btn"
+            id="signOutBtn"
+            style="display:none;"
+          >
+            Sign Out
+          </button>
+
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              SETTINGS
-        ========================== -->
+        ================================================== -->
 
         <div
           class="page"
@@ -907,6 +1105,7 @@
 
           <div class="settings-card">
 
+
             <div class="setting-row">
 
               <div>
@@ -921,7 +1120,9 @@
 
               </div>
 
+
               <button
+                type="button"
                 class="secondary-btn"
                 id="settingsThemeBtn"
               >
@@ -945,6 +1146,7 @@
 
               </div>
 
+
               <input
                 type="checkbox"
                 id="notificationsToggle"
@@ -964,7 +1166,9 @@
   </div>
 
 
-  <!-- TOAST -->
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
 
   <div
     class="toast"
@@ -972,7 +1176,14 @@
   ></div>
 
 
-  <!-- SCRIPTS -->
+  <!-- =====================================================
+       LEX ONE SCRIPTS
+
+       ORDER IS IMPORTANT:
+       1. Supabase library
+       2. supabase.js
+       3. app.js
+  ====================================================== -->
 
   <script src="supabase.js"></script>
   <script src="app.js"></script>
